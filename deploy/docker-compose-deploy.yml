@@ -1,0 +1,13 @@
+services:
+  frontend:
+    image: ${DOCKERHUB_USERNAME:-fabien31520}/abv-frontend:${APP_TAG:-latest}
+    restart: unless-stopped
+    networks:
+      proxy:
+        aliases:
+          - frontend-abv
+
+networks:
+  proxy:
+    external: true
+    name: proxy

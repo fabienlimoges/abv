@@ -1,0 +1,68 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: ["Build and Publish Docker image"]
+    types: [completed]
+
+jobs:
+  notify:
+    name: Notify Telegram (start)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Notify CD start
+        uses: ./.github/actions/telegram-notify
+        with:
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          chat_id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          message: "CD started: ${{ github.repository }} @ ${{ github.ref_name }} (sha=${{ github.sha }})"
+
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute deployment values
+        id: vars
+        run: |
+          echo "tag=sha-${{ github.event.workflow_run.head_sha }}" >> "$GITHUB_OUTPUT"
+          echo "app_dir=${{ secrets.DEPLOY_PATH || '/opt/abv' }}" >> "$GITHUB_OUTPUT"
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Deploy
+        run: |
+          ssh -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            "mkdir -p '${{ steps.vars.outputs.app_dir }}'"
+          scp -P "${{ secrets.SSH_PORT }}" deploy/docker-compose-deploy.yml \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ steps.vars.outputs.app_dir }}/docker-compose.yml"
+          scp -P "${{ secrets.SSH_PORT }}" deploy/deploy.sh \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ steps.vars.outputs.app_dir }}/deploy.sh"
+          ssh -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            "chmod +x '${{ steps.vars.outputs.app_dir }}/deploy.sh' && '${{ steps.vars.outputs.app_dir }}/deploy.sh' '${{ steps.vars.outputs.tag }}'"
+
+      - name: Notify success
+        if: success()
+        uses: ./.github/actions/telegram-notify
+        with:
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          chat_id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          message: "Successfully deployed"
+
+      - name: Notify failure
+        if: failure()
+        uses: ./.github/actions/telegram-notify
+        with:
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          chat_id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          message: "Deploy job failed"
+

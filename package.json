@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "dev": "npm --prefix app run dev",
+    "landing": "python3 -m http.server 5173 --directory landing_page",
+    "app": "npm --prefix app run dev",
+    "build": "npm --prefix app run build"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
