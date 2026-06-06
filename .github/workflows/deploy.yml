@@ -48,7 +48,7 @@ jobs:
           scp -P "${{ secrets.SSH_PORT }}" deploy/deploy.sh \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ steps.vars.outputs.app_dir }}/deploy.sh"
           ssh -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
-            "chmod +x '${{ steps.vars.outputs.app_dir }}/deploy.sh' && '${{ steps.vars.outputs.app_dir }}/deploy.sh' '${{ steps.vars.outputs.tag }}'"
+            "chmod +x '${{ steps.vars.outputs.app_dir }}/deploy.sh' && DOCKERHUB_USERNAME='${{ secrets.DOCKERHUB_USERNAME }}' '${{ steps.vars.outputs.app_dir }}/deploy.sh' '${{ steps.vars.outputs.tag }}'"
 
       - name: Notify success
         if: success()
@@ -65,4 +65,3 @@ jobs:
           token: ${{ secrets.TELEGRAM_TOKEN }}
           chat_id: ${{ secrets.TELEGRAM_CHAT_ID }}
           message: "Deploy job failed"
-
