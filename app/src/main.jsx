@@ -235,7 +235,7 @@ function App() {
     const email = String(data.get("email") || "").trim();
     const password = String(data.get("password") || "").trim();
     if (email !== "demo@abv.com" || password !== "abv") {
-      setLoginError("Use the demo member access: demo@abv.com / abv.");
+      setLoginError("Enter an email address and password to continue.");
       return;
     }
     setMemberEmail(email);
@@ -313,11 +313,11 @@ function LoginScreen({ loginError, onSubmit }) {
           </div>
           <label className="mb-4 grid gap-2 text-xs uppercase tracking-[.14em] text-stone-300">
             Email address
-            <Input name="email" type="email" placeholder="demo@abv.com" />
+              <Input name="email" type="email" placeholder="your email" />
           </label>
           <label className="mb-4 grid gap-2 text-xs uppercase tracking-[.14em] text-stone-300">
             Password
-            <Input name="password" type="password" placeholder="abv" />
+            <Input name="password" type="password" placeholder="your password" />
           </label>
           {loginError && <p className="mb-4 text-sm text-rose-200">{loginError}</p>}
           <Button className="w-full" type="submit">
