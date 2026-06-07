@@ -22,6 +22,7 @@ import {
 import desertTale from "../content/events/desert-tale.md?raw";
 import privateVault from "../content/events/private-vault.md?raw";
 import veniceAtelier from "../content/events/venice-atelier.md?raw";
+import brandMark from "../assets/abv-mark.png";
 import dubaiHero from "../assets/dubai-hero.png";
 import boardImage from "../assets/abv-ui-board.png";
 import { Badge } from "./components/ui/badge";
@@ -219,12 +220,7 @@ function bodyToBlocks(body) {
 
 function App() {
   const events = useMemo(() => eventSources.map(([id, source]) => parseMarkdown(id, source)), []);
-  const collections = {
-    Events: events,
-    "Exclusive Sales": sales,
-    Masterclasses: masterclasses,
-    "Exclusive Take aways": takeaways
-  };
+  const collections = { Events: events };
   const [isAuthenticated, setAuthenticated] = useState(false);
   const [memberEmail, setMemberEmail] = useState("");
   const [loginError, setLoginError] = useState("");
@@ -238,8 +234,8 @@ function App() {
     const data = new FormData(event.currentTarget);
     const email = String(data.get("email") || "").trim();
     const password = String(data.get("password") || "").trim();
-    if (!email || !password) {
-      setLoginError("Enter an email address and password to continue.");
+    if (email !== "demo@abv.com" || password !== "abv") {
+      setLoginError("Use the demo member access: demo@abv.com / abv.");
       return;
     }
     setMemberEmail(email);
@@ -297,6 +293,7 @@ function LoginScreen({ loginError, onSubmit }) {
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(12,13,13,.96),rgba(12,13,13,.52),rgba(12,13,13,.88))]" />
       <section className="relative mx-auto grid w-full max-w-5xl items-center gap-8 py-8 md:grid-cols-[minmax(0,1fr)_24rem] lg:gap-12">
         <div className="mx-auto w-full max-w-xl pb-6 md:mx-0 md:pb-0">
+          <img src={brandMark} alt="" className="mb-5 h-16 w-16 rounded-full border border-[#d6ad57]/25 object-cover shadow-[0_0_32px_rgba(214,173,87,.22)]" />
           <Badge>
             <Crown size={14} />
             Private member access
@@ -316,11 +313,11 @@ function LoginScreen({ loginError, onSubmit }) {
           </div>
           <label className="mb-4 grid gap-2 text-xs uppercase tracking-[.14em] text-stone-300">
             Email address
-            <Input name="email" type="email" placeholder="member@abv.reserve" />
+            <Input name="email" type="email" placeholder="demo@abv.com" />
           </label>
           <label className="mb-4 grid gap-2 text-xs uppercase tracking-[.14em] text-stone-300">
             Password
-            <Input name="password" type="password" placeholder="Password" />
+            <Input name="password" type="password" placeholder="abv" />
           </label>
           {loginError && <p className="mb-4 text-sm text-rose-200">{loginError}</p>}
           <Button className="w-full" type="submit">
@@ -336,9 +333,8 @@ function Header({ memberEmail, onHome, onSignOut }) {
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0c0d0d]/85 px-4 py-3 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3">
-        <button onClick={onHome} className="flex items-center gap-3 text-left">
-          <span className="font-serif text-3xl text-[#d6ad57]">ABV</span>
-          <span className="hidden text-xs uppercase tracking-[.18em] text-stone-400 sm:block">Club Reserve</span>
+        <button onClick={onHome} className="grid h-11 w-11 place-items-center rounded-full border border-[#d6ad57]/25 bg-black/45 shadow-[0_0_24px_rgba(214,173,87,.12)]" aria-label="ABV Club Reserve home">
+          <img src={brandMark} alt="" className="h-9 w-9 rounded-full object-cover" />
         </button>
         <div className="flex min-w-0 items-center gap-2">
           <span className="hidden min-h-10 max-w-56 items-center gap-2 truncate rounded-lg border border-white/10 bg-white/[.035] px-3 text-xs text-stone-300 sm:inline-flex">
@@ -375,15 +371,15 @@ function HomeScreen({ collections, eventFilter, setEventFilter, onOpen, onSectio
             </Badge>
             <h1 className="mt-5 font-serif text-5xl leading-[.94] md:text-7xl">Explore rare experiences</h1>
             <p className="mt-5 max-w-xl leading-8 text-stone-200">
-              Curated events, private bottle allocations, masterclasses, and take away experiences for ABV Reserve Club members.
+              Browse upcoming private tastings, producer dinners, cellar previews, and brand-hosted moments selected for ABV Club Reserve members.
             </p>
           </div>
         </div>
         <div className="grid gap-3 p-5">
           {[
-            ["42", "Available seats"],
-            ["AED 1,850", "Average ticket"],
-            ["2h", "Concierge SLA"]
+            [String(collections.Events.length), "Upcoming events"],
+            ["24", "Available seats"],
+            ["3", "Host cities"]
           ].map(([value, label]) => (
             <div key={label} className="rounded-lg border border-white/10 bg-white/[.04] p-4">
               <strong className="block text-2xl text-[#d6ad57]">{value}</strong>
@@ -402,9 +398,6 @@ function HomeScreen({ collections, eventFilter, setEventFilter, onOpen, onSectio
       </section>
 
       <CollectionRail title="Events" items={filteredEvents} onOpen={onOpen} onSection={onSection} onReserve={onReserve} />
-      <CollectionRail title="Exclusive Sales" items={collections["Exclusive Sales"]} onOpen={onOpen} onSection={onSection} onReserve={onReserve} />
-      <CollectionRail title="Masterclasses" items={collections.Masterclasses} onOpen={onOpen} onSection={onSection} onReserve={onReserve} />
-      <CollectionRail title="Exclusive Take aways" items={collections["Exclusive Take aways"]} onOpen={onOpen} onSection={onSection} onReserve={onReserve} />
     </main>
   );
 }
@@ -415,7 +408,7 @@ function CollectionRail({ title, items, onOpen, onSection, onReserve }) {
       <div className="mb-3 flex items-end justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-[.18em] text-[#d6ad57]">{title}</p>
-          <h2 className="mt-1 font-serif text-3xl text-stone-50">Curated for members</h2>
+          <h2 className="mt-1 font-serif text-3xl text-stone-50">Upcoming member events</h2>
         </div>
         <Button variant="ghost" onClick={() => onSection(title)}>
           View all <ChevronRight size={16} />
