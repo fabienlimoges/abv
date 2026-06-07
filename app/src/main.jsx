@@ -294,10 +294,7 @@ function LoginScreen({ loginError, onSubmit }) {
       <section className="relative mx-auto grid w-full max-w-5xl items-center gap-8 py-8 md:grid-cols-[minmax(0,1fr)_24rem] lg:gap-12">
         <div className="mx-auto w-full max-w-xl pb-6 md:mx-0 md:pb-0">
           <img src={brandMark} alt="" className="mb-5 h-16 w-16 rounded-full border border-[#d6ad57]/25 object-cover shadow-[0_0_32px_rgba(214,173,87,.22)]" />
-          <Badge>
-            <Crown size={14} />
-            Private member access
-          </Badge>
+        
           <h1 className="mt-5 max-w-xl font-serif text-6xl leading-[.9] text-stone-50 md:text-8xl">ABV Club Reserve</h1>
           <p className="mt-5 max-w-xl text-base leading-8 text-stone-200">
             Private access to rare bottles, curated tastings, member-only masterclasses, and exclusive take away experiences across Dubai.
@@ -307,7 +304,6 @@ function LoginScreen({ loginError, onSubmit }) {
           <div className="mb-5 flex items-center justify-between">
             <div>
               <p className="text-xs uppercase tracking-[.16em] text-[#d6ad57]">Member sign in</p>
-              <h2 className="mt-2 font-serif text-3xl">Enter the club</h2>
             </div>
             <ShieldCheck className="text-[#d6ad57]" />
           </div>
@@ -360,34 +356,7 @@ function HomeScreen({ collections, eventFilter, setEventFilter, onOpen, onSectio
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6">
-      <section className="grid min-h-[26rem] items-end overflow-hidden rounded-lg border border-white/10 bg-[#161411] md:grid-cols-[1fr_20rem]">
-        <div className="relative min-h-[26rem] p-5 md:p-8">
-          <img src={boardImage} alt="" className="absolute inset-0 h-full w-full object-cover opacity-55" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(12,13,13,.95),rgba(12,13,13,.45),rgba(12,13,13,.82))]" />
-          <div className="relative max-w-2xl">
-            <Badge>
-              <Sparkles size={14} />
-              Private member dashboard
-            </Badge>
-            <h1 className="mt-5 font-serif text-5xl leading-[.94] md:text-7xl">Explore rare experiences</h1>
-            <p className="mt-5 max-w-xl leading-8 text-stone-200">
-              Browse upcoming private tastings, producer dinners, cellar previews, and brand-hosted moments selected for ABV Club Reserve members.
-            </p>
-          </div>
-        </div>
-        <div className="grid gap-3 p-5">
-          {[
-            [String(collections.Events.length), "Upcoming events"],
-            ["24", "Available seats"],
-            ["3", "Host cities"]
-          ].map(([value, label]) => (
-            <div key={label} className="rounded-lg border border-white/10 bg-white/[.04] p-4">
-              <strong className="block text-2xl text-[#d6ad57]">{value}</strong>
-              <span className="text-sm text-stone-400">{label}</span>
-            </div>
-          ))}
-        </div>
-      </section>
+      
 
       <section className="mt-6 flex flex-wrap gap-2">
         {eventTags.map((tag) => (
